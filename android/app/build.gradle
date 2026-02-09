@@ -1,0 +1,95 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+android {
+    namespace "com.justbaat.ads.flutter_test_app"
+    compileSdk 35
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        applicationId "com.justbaat.ads.flutter_test_app"
+        minSdkVersion flutter.minSdkVersion
+        targetSdk 35
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.0")
+    // Material Components library (required for Material Components themes)
+    // Version matches SDK requirement
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("com.google.android.gms:play-services-ads:23.0.0")
+    // Unity Mediation SDK (required by JustBaat Ads SDK)
+    implementation("com.unity3d.ads-mediation:mediation-sdk:8.10.0")
+    implementation "com.google.code.gson:gson:2.10.1"
+    // SDK from Maven repository
+    implementation("com.justbaatAds:adsSdk:1.0.8")
+}
+
+// Copy APK to where Flutter expects it (build/app/outputs/flutter-apk/)
+afterEvaluate {
+    def flutterProjectRoot = rootProject.projectDir.parent
+    def flutterApkDir = file("$flutterProjectRoot/build/app/outputs/flutter-apk")
+    ["assembleDebug", "assembleRelease"].each { taskName ->
+        tasks.findByName(taskName)?.doLast {
+            def buildType = taskName == "assembleDebug" ? "debug" : "release"
+            def apkName = "app-${buildType}.apk"
+            def sourceApk = file("${project.buildDir}/outputs/apk/${buildType}/${apkName}")
+            if (sourceApk.exists()) {
+                flutterApkDir.mkdirs()
+                copy {
+                    from sourceApk
+                    into flutterApkDir
+                    rename(apkName, apkName)
+                }
+            }
+        }
+    }
+}
+
