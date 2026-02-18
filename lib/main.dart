@@ -80,6 +80,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  /// Delay before mounting native ad so SDK has time to initialize and load config.
+  bool _readyForNativeAd = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 2500), () {
+        if (mounted) setState(() => _readyForNativeAd = true);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,23 +167,44 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 24),
 
-            // Native Ad Section
+            // Native Ad Section — install button colors set here via ctaStyle
             const Text(
               'Native Ad',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            // Temporarily commented out to test
-            // const NativeAdWidget(
-            //   divId: 'native_ad_container',
-            //   height: 300,
-            //   onAdLoaded: _onNativeLoaded,
-            //   onAdFailed: _onNativeFailed,
-            // ),
-            Container(
-              height: 300,
-              color: Colors.grey[300],
-              child: const Center(child: Text('Native Ad (disabled for testing)')),
+            SizedBox
+            (
+              height: 420,
+              child: _readyForNativeAd
+                  ? NativeAdWidget(
+                      divId: 'native_ad_container',
+                      height: 420,
+                      width: double.infinity,
+                      ctaStyle: const NativeAdCtaStyle(
+                        backgroundColor: Color(0xFFFFBD00), // Google Ads yellow
+                        textColor: Colors.black,             // Black text on yellow button
+                        cornerRadius: 12,                    // Rounded corners matching screenshot
+                        label: 'INSTALL',
+                      ),
+                      onAdLoaded: _onNativeLoaded,
+                      onAdFailed: _onNativeFailed,
+                    )
+                  : Container(
+                      color: Colors.grey[200],
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.campaign_outlined, size: 40, color: Colors.grey[600]),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Loading ad...',
+                            style: TextStyle(color: Colors.grey[700], fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
             ),
           ],
         ),
