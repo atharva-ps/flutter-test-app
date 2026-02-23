@@ -26,8 +26,3 @@ plugins {
 }
 
 include ":app"
-
-// Include SDK module (required by the plugin)
-//include ":sdk"
-//project(":sdk").projectDir = new File("../../sdk")
-
