@@ -69,26 +69,6 @@ dependencies {
     implementation("com.unity3d.ads-mediation:mediation-sdk:8.10.0")
     implementation "com.google.code.gson:gson:2.10.1"
     // SDK from Maven repository
-    implementation("com.justbaatAds:adsSdk:1.0.9")
-}
-
-// Copy APK to where Flutter expects it (build/app/outputs/flutter-apk/)
-afterEvaluate {
-    def flutterProjectRoot = rootProject.projectDir.parent
-    def flutterApkDir = file("$flutterProjectRoot/build/app/outputs/flutter-apk")
-    ["assembleDebug", "assembleRelease"].each { taskName ->
-        tasks.findByName(taskName)?.doLast {
-            def buildType = taskName == "assembleDebug" ? "debug" : "release"
-            def apkName = "app-${buildType}.apk"
-            def sourceApk = file("${project.buildDir}/outputs/apk/${buildType}/${apkName}")
-            if (sourceApk.exists()) {
-                flutterApkDir.mkdirs()
-                copy {
-                    from sourceApk
-                    into flutterApkDir
-                    rename(apkName, apkName)
-                }
-            }
-        }
-    }
+    implementation("com.justbaatAds:adsSdk:1.1.0")
+    // implementation project(":sdk")
 }

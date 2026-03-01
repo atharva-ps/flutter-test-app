@@ -80,6 +80,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool _readyForNativeAd = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 2500), () {
+        if (mounted) setState(() => _readyForNativeAd = true);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -160,18 +172,18 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            // Temporarily commented out to test
-            // const NativeAdWidget(
-            //   divId: 'native_ad_container',
-            //   height: 300,
-            //   onAdLoaded: _onNativeLoaded,
-            //   onAdFailed: _onNativeFailed,
-            // ),
-            Container(
-              height: 300,
-              color: Colors.grey[300],
-              child: const Center(child: Text('Native Ad (disabled for testing)')),
-            ),
+            if (_readyForNativeAd)
+              const NativeAdWidget(
+                divId: 'native_ad_container',
+                height: 450,
+                onAdLoaded: _onNativeLoaded,
+                onAdFailed: _onNativeFailed,
+              )
+            else
+              Container(
+                height: 450,
+                child: const Center(child: Text('Loading native ad...')),
+              ),
           ],
         ),
       ),

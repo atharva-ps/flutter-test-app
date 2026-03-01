@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:justbaat_ads/justbaat_ads.dart';
-import 'widgets/custom_native_ad_card.dart';
 
 void main() {
   runApp(const MyApp());
@@ -154,6 +153,34 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 24),
 
+            // Native Ad Section
+            const Text(
+              'Native Ad',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            // Temporarily commented out to test
+            if (_readyForNativeAd)
+              CustomNativeAdWidget(
+                factoryId: 'myNativeAdFactory',
+                width: double.infinity,
+                height: 450,
+                onAdLoaded: () {print ('Custom native ad loaded!');},
+                onAdFailed: (error) {print ('Custom native ad failed: $error');},
+              )
+            else
+              Container(
+                height: 100,
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Center(
+                  child: Text('Initializing SDK...', style: TextStyle(color: Colors.grey)),
+                ),
+              ),
+              const SizedBox(height: 32),
+
             // App Open Ad Buttons
             ElevatedButton.icon(
               onPressed: _loadAppOpen,
@@ -167,40 +194,6 @@ class _HomePageState extends State<HomePage> {
               label: const Text('Show App Open Ad'),
             ),
             const SizedBox(height: 24),
-
-            // Native Ad Section — Custom UI card wrapping the SDK native ad
-            const Text(
-              'Native Ad',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            if (_readyForNativeAd)
-              CustomNativeAdCard(
-                divId: 'native_ad_container',
-                nativeAdHeight: 300,
-                onAdLoaded: _onNativeLoaded,
-                onAdFailed: _onNativeFailed,
-              )
-            else
-              Container(
-                height: 420,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                alignment: Alignment.center,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.campaign_outlined, size: 40, color: Colors.grey[600]),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Loading ad...',
-                      style: TextStyle(color: Colors.grey[700], fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
           ],
         ),
       ),
