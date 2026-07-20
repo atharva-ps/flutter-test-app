@@ -3,9 +3,9 @@ package com.justbaat.ads.flutter_test_app
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
-import com.google.android.gms.ads.nativead.MediaView
-import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.nativead.NativeAdView
+import com.google.android.libraries.ads.mobile.sdk.nativead.MediaView
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAd
+import com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView
 import com.justbaat.ads.flutter.JustbaatNativeAdFactory
 
 class MyNativeAdFactory(
@@ -25,7 +25,7 @@ class MyNativeAdFactory(
         adView.bodyView = adView.findViewById(R.id.ad_body)
         adView.callToActionView = adView.findViewById(R.id.ad_call_to_action)
         adView.iconView = adView.findViewById(R.id.ad_app_icon)
-        adView.mediaView = adView.findViewById(R.id.ad_media)
+        // mediaView is a read-only val in Next-Gen; bound via registerNativeAd below.
         adView.advertiserView = adView.findViewById(R.id.ad_advertiser)
         adView.storeView = adView.findViewById(R.id.ad_store)
         adView.priceView = adView.findViewById(R.id.ad_price)
@@ -74,7 +74,7 @@ class MyNativeAdFactory(
         (adView.starRatingView as? RatingBar)?.visibility = View.GONE
 
         // IMPORTANT: This must be called last!
-        adView.setNativeAd(nativeAd)
+        adView.registerNativeAd(nativeAd, adView.findViewById(R.id.ad_media))
 
         return adView
     }

@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       if (!mounted) return;
       
       await JustbaatAds.initialize(
-        companyId: 'sample-test-new',
+        companyId: 'sdk-sample-test-new',
         onSdkReady: () {
           print('SDK is ready!');
           // Don't use ScaffoldMessenger here - context might not be ready
